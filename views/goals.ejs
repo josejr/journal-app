@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — Goals</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <h1>📓 Daily Journal</h1>
+      <nav>
+        <a href="/">Today</a>
+        <a href="/history">History</a>
+        <a href="/calendar">Calendar</a>
+        <a href="/goals">Goals</a>
+        <a href="/settings">Settings</a>
+      </nav>
+    </header>
+
+    <h2>New S.M.A.R.T. goal</h2>
+
+    <% if (error) { %><p class="error-banner"><%= error %></p><% } %>
+
+    <form method="POST" action="/goals" class="settings-form">
+      <label>
+        Title
+        <input type="text" name="title" placeholder="Run a 5K" required />
+      </label>
+
+      <label>
+        Specific — what exactly do you want to accomplish?
+        <textarea name="specific" rows="2"></textarea>
+      </label>
+
+      <label>
+        Measurable — how will you know you've reached it?
+        <textarea name="measurable" rows="2"></textarea>
+      </label>
+
+      <label>
+        Achievable — what makes this realistic for you right now?
+        <textarea name="achievable" rows="2"></textarea>
+      </label>
+
+      <label>
+        Relevant — why does this matter to you?
+        <textarea name="relevant" rows="2"></textarea>
+      </label>
+
+      <label>
+        Time-bound (target date)
+        <input type="date" name="target_date" />
+      </label>
+
+      <button type="submit">Add goal</button>
+    </form>
+
+    <h2>Active goals</h2>
+    <% if (activeGoals.length === 0) { %>
+      <p class="empty">No active goals yet — add one above.</p>
+    <% } else { %>
+      <ul class="goal-list">
+        <% activeGoals.forEach(function(g) { %>
+          <li class="goal-detail-card">
+            <div class="goal-detail-header">
+              <p class="goal-detail-title"><%= g.title %></p>
+              <% if (g.displayTargetDate) { %>
+                <span class="goal-deadline">by <%= g.displayTargetDate %></span>
+              <% } %>
+            </div>
+            <% if (g.specific) { %><p class="goal-field"><strong>Specific:</strong> <%= g.specific %></p><% } %>
+            <% if (g.measurable) { %><p class="goal-field"><strong>Measurable:</strong> <%= g.measurable %></p><% } %>
+            <% if (g.achievable) { %><p class="goal-field"><strong>Achievable:</strong> <%= g.achievable %></p><% } %>
+            <% if (g.relevant) { %><p class="goal-field"><strong>Relevant:</strong> <%= g.relevant %></p><% } %>
+            <div class="goal-actions">
+              <form method="POST" action="/goals/<%= g.id %>/complete">
+                <button type="submit" class="secondary">Mark complete</button>
+              </form>
+              <form method="POST" action="/goals/<%= g.id %>/delete">
+                <button type="submit" class="secondary">Delete</button>
+              </form>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+
+    <% if (completedGoals.length > 0) { %>
+      <h2>Completed</h2>
+      <ul class="goal-list">
+        <% completedGoals.forEach(function(g) { %>
+          <li class="goal-detail-card completed">
+            <div class="goal-detail-header">
+              <p class="goal-detail-title"><%= g.title %></p>
+            </div>
+            <div class="goal-actions">
+              <form method="POST" action="/goals/<%= g.id %>/reactivate">
+                <button type="submit" class="secondary">Reactivate</button>
+              </form>
+              <form method="POST" action="/goals/<%= g.id %>/delete">
+                <button type="submit" class="secondary">Delete</button>
+              </form>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+</body>
+</html>

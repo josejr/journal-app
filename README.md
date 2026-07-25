@@ -9,6 +9,7 @@ A small daily journal app with writing prompts and optional Telegram reminders.
 - Dates displayed as mm/dd/yyyy throughout
 - Hashtags — type `#anything` in an entry and it becomes a clickable tag; click a tag to filter History to matching entries
 - Calendar view — a month grid showing which days have entries, with one click through to any day
+- S.M.A.R.T. goals — track goals (Specific, Measurable, Achievable, Relevant, Time-bound) on a dedicated Goals page; active goals show as a condensed sidebar next to the journal entry
 - Free daily reminders via a Telegram bot — the bot sends you the day's prompt, and replying to it in Telegram saves that message as the day's entry
 
 ## Setup

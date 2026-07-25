@@ -340,3 +340,160 @@ h2 {
 .calendar-cell.is-today {
   box-shadow: 0 0 0 2px var(--accent);
 }
+
+.page.wide {
+  max-width: 900px;
+}
+
+.entry-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.entry-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.goals-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .entry-layout {
+    flex-direction: column;
+  }
+  .goals-sidebar {
+    width: 100%;
+  }
+}
+
+.goals-sidebar-title {
+  font-family: -apple-system, sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.goals-empty {
+  font-family: -apple-system, sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.goals-empty a {
+  color: var(--accent);
+}
+
+.goal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+}
+
+.goal-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.goal-deadline {
+  margin: 4px 0 0;
+  font-family: -apple-system, sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.goals-manage-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: -apple-system, sans-serif;
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.goals-manage-link:hover {
+  text-decoration: underline;
+}
+
+.goal-list {
+  list-style: none;
+  padding: 0;
+}
+
+.goal-detail-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.goal-detail-card.completed {
+  border-left-color: var(--border);
+  opacity: 0.75;
+}
+
+.goal-detail-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.goal-detail-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.goal-field {
+  font-family: -apple-system, sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin: 8px 0 0;
+}
+
+.goal-field strong {
+  color: var(--muted);
+}
+
+.goal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.goal-actions form button {
+  margin-top: 0;
+}
+
+.settings-form textarea {
+  font-family: -apple-system, sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.settings-form input[type="date"] {
+  font-family: -apple-system, sans-serif;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+}

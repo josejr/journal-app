@@ -90,6 +90,46 @@ function saveEntry(date, prompt, content) {
   upsertStmt.run({ date, prompt, content });
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS goals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    specific TEXT NOT NULL DEFAULT '',
+    measurable TEXT NOT NULL DEFAULT '',
+    achievable TEXT NOT NULL DEFAULT '',
+    relevant TEXT NOT NULL DEFAULT '',
+    target_date TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
+const listGoalsByStatusStmt = db.prepare(
+  "SELECT * FROM goals WHERE status = ? ORDER BY target_date ASC, created_at ASC"
+);
+const insertGoalStmt = db.prepare(`
+  INSERT INTO goals (title, specific, measurable, achievable, relevant, target_date)
+  VALUES (@title, @specific, @measurable, @achievable, @relevant, @target_date)
+`);
+const setGoalStatusStmt = db.prepare("UPDATE goals SET status = ? WHERE id = ?");
+const deleteGoalStmt = db.prepare("DELETE FROM goals WHERE id = ?");
+
+function listGoalsByStatus(status) {
+  return listGoalsByStatusStmt.all(status);
+}
+
+function createGoal({ title, specific, measurable, achievable, relevant, target_date }) {
+  insertGoalStmt.run({ title, specific, measurable, achievable, relevant, target_date });
+}
+
+function setGoalStatus(id, status) {
+  setGoalStatusStmt.run(status, id);
+}
+
+function deleteGoal(id) {
+  deleteGoalStmt.run(id);
+}
+
 module.exports = {
   getEntry,
   listEntries,
@@ -98,4 +138,8 @@ module.exports = {
   saveSettings,
   setTelegramChatId,
   setTelegramOffset,
+  listGoalsByStatus,
+  createGoal,
+  setGoalStatus,
+  deleteGoal,
 };

@@ -45,6 +45,7 @@ app.get("/entry/:date", (req, res) => {
     tags: extractTags(content),
     isToday: date === todayStr(),
     saved: false,
+    activeGoals: activeGoalsForSidebar(),
   });
 });
 
@@ -63,8 +64,16 @@ app.post("/entry/:date", (req, res) => {
     tags: extractTags(content || ""),
     isToday: date === todayStr(),
     saved: true,
+    activeGoals: activeGoalsForSidebar(),
   });
 });
+
+function activeGoalsForSidebar() {
+  return db.listGoalsByStatus("active").map((g) => ({
+    ...g,
+    displayTargetDate: g.target_date ? formatDisplayDate(g.target_date) : null,
+  }));
+}
 
 app.get("/history", (req, res) => {
   let entries = db.listEntries().map((e) => ({
@@ -111,6 +120,60 @@ app.get("/calendar", (req, res) => {
     prevMonth: monthKey(prev.year, prev.month),
     nextMonth: monthKey(next.year, next.month),
   });
+});
+
+function formatGoal(g) {
+  return { ...g, displayTargetDate: g.target_date ? formatDisplayDate(g.target_date) : null };
+}
+
+app.get("/goals", (req, res) => {
+  res.render("goals", {
+    activeGoals: db.listGoalsByStatus("active").map(formatGoal),
+    completedGoals: db.listGoalsByStatus("completed").map(formatGoal),
+    error: null,
+  });
+});
+
+app.post("/goals", (req, res) => {
+  const title = (req.body.title || "").trim();
+  const target_date = req.body.target_date || "";
+
+  if (!title) {
+    return res.render("goals", {
+      activeGoals: db.listGoalsByStatus("active").map(formatGoal),
+      completedGoals: db.listGoalsByStatus("completed").map(formatGoal),
+      error: "A goal needs at least a title.",
+    });
+  }
+  if (target_date && !DATE_RE.test(target_date)) {
+    return res.status(400).send("Invalid target date");
+  }
+
+  db.createGoal({
+    title,
+    specific: (req.body.specific || "").trim(),
+    measurable: (req.body.measurable || "").trim(),
+    achievable: (req.body.achievable || "").trim(),
+    relevant: (req.body.relevant || "").trim(),
+    target_date,
+  });
+
+  res.redirect("/goals");
+});
+
+app.post("/goals/:id/complete", (req, res) => {
+  db.setGoalStatus(Number(req.params.id), "completed");
+  res.redirect("/goals");
+});
+
+app.post("/goals/:id/reactivate", (req, res) => {
+  db.setGoalStatus(Number(req.params.id), "active");
+  res.redirect("/goals");
+});
+
+app.post("/goals/:id/delete", (req, res) => {
+  db.deleteGoal(Number(req.params.id));
+  res.redirect("/goals");
 });
 
 app.get("/settings", (req, res) => {

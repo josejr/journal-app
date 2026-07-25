@@ -7,46 +7,68 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <div class="page">
+  <div class="page wide">
     <header class="top">
       <h1>📓 Daily Journal</h1>
       <nav>
         <a href="/">Today</a>
         <a href="/history">History</a>
         <a href="/calendar">Calendar</a>
+        <a href="/goals">Goals</a>
         <a href="/settings">Settings</a>
       </nav>
     </header>
 
-    <div class="date-row">
-      <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() - 86400000).toISOString().slice(0,10) %>">&larr;</a>
-      <span class="date-label"><%= displayDate %><%= isToday ? " (today)" : "" %></span>
-      <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() + 86400000).toISOString().slice(0,10) %>">&rarr;</a>
-    </div>
+    <div class="entry-layout">
+      <div class="entry-main">
+        <div class="date-row">
+          <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() - 86400000).toISOString().slice(0,10) %>">&larr;</a>
+          <span class="date-label"><%= displayDate %><%= isToday ? " (today)" : "" %></span>
+          <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() + 86400000).toISOString().slice(0,10) %>">&rarr;</a>
+        </div>
 
-    <div class="prompt-card">
-      <p class="prompt-label">Today's prompt</p>
-      <p class="prompt-text"><%= prompt %></p>
-      <a class="shuffle" href="/entry/<%= date %>?newPrompt=1">🔀 Give me another prompt</a>
-    </div>
+        <div class="prompt-card">
+          <p class="prompt-label">Today's prompt</p>
+          <p class="prompt-text"><%= prompt %></p>
+          <a class="shuffle" href="/entry/<%= date %>?newPrompt=1">🔀 Give me another prompt</a>
+        </div>
 
-    <% if (saved) { %>
-      <p class="saved-banner">Saved ✓</p>
-    <% } %>
+        <% if (saved) { %>
+          <p class="saved-banner">Saved ✓</p>
+        <% } %>
 
-    <form method="POST" action="/entry/<%= date %>">
-      <input type="hidden" name="prompt" value="<%= prompt %>" />
-      <textarea name="content" rows="14" placeholder="Start writing... use #hashtags to tag this entry"><%= content %></textarea>
-      <button type="submit">Save entry</button>
-    </form>
+        <form method="POST" action="/entry/<%= date %>">
+          <input type="hidden" name="prompt" value="<%= prompt %>" />
+          <textarea name="content" rows="14" placeholder="Start writing... use #hashtags to tag this entry"><%= content %></textarea>
+          <button type="submit">Save entry</button>
+        </form>
 
-    <% if (tags.length > 0) { %>
-      <div class="tag-row">
-        <% tags.forEach(function(tag) { %>
-          <a class="tag-chip" href="/history?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a>
-        <% }); %>
+        <% if (tags.length > 0) { %>
+          <div class="tag-row">
+            <% tags.forEach(function(tag) { %>
+              <a class="tag-chip" href="/history?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a>
+            <% }); %>
+          </div>
+        <% } %>
       </div>
-    <% } %>
+
+      <aside class="goals-sidebar">
+        <p class="goals-sidebar-title">Goals</p>
+        <% if (activeGoals.length === 0) { %>
+          <p class="goals-empty">No active goals yet. <a href="/goals">Add one</a>.</p>
+        <% } else { %>
+          <% activeGoals.forEach(function(g) { %>
+            <div class="goal-card">
+              <p class="goal-title"><%= g.title %></p>
+              <% if (g.displayTargetDate) { %>
+                <p class="goal-deadline">by <%= g.displayTargetDate %></p>
+              <% } %>
+            </div>
+          <% }); %>
+          <a class="goals-manage-link" href="/goals">Manage goals</a>
+        <% } %>
+      </aside>
+    </div>
   </div>
 </body>
 </html>
