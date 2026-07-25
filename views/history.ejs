@@ -13,21 +13,42 @@
       <nav>
         <a href="/">Today</a>
         <a href="/history">History</a>
+        <a href="/calendar">Calendar</a>
         <a href="/settings">Settings</a>
       </nav>
     </header>
 
     <h2>Past entries</h2>
 
+    <% if (tagFilter) { %>
+      <p class="notice">
+        Filtering by <strong>#<%= tagFilter %></strong> —
+        <a href="/history">Clear</a>
+      </p>
+    <% } %>
+
     <% if (entries.length === 0) { %>
-      <p class="empty">No entries yet. <a href="/">Write your first one</a>.</p>
+      <p class="empty">
+        <% if (tagFilter) { %>
+          No entries tagged <strong>#<%= tagFilter %></strong>.
+        <% } else { %>
+          No entries yet. <a href="/">Write your first one</a>.
+        <% } %>
+      </p>
     <% } else { %>
       <ul class="entry-list">
         <% entries.forEach(function(e) { %>
           <li>
-            <a href="/entry/<%= e.date %>" class="entry-date"><%= e.date %></a>
+            <a href="/entry/<%= e.date %>" class="entry-date"><%= e.displayDate %></a>
             <p class="entry-prompt"><%= e.prompt %></p>
             <p class="entry-snippet"><%= e.content.length > 160 ? e.content.slice(0, 160) + "…" : e.content %></p>
+            <% if (e.tags.length > 0) { %>
+              <div class="tag-row">
+                <% e.tags.forEach(function(tag) { %>
+                  <a class="tag-chip" href="/history?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a>
+                <% }); %>
+              </div>
+            <% } %>
           </li>
         <% }); %>
       </ul>

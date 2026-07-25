@@ -5,7 +5,10 @@ A small daily journal app with writing prompts and optional Telegram reminders.
 ## Features
 
 - A new writing prompt each day (consistent per date, with a shuffle option if you want a different one)
-- Save and revisit past entries in a simple history view
+- Save and revisit past entries in a simple history view, and edit any previous day's entry
+- Dates displayed as mm/dd/yyyy throughout
+- Hashtags — type `#anything` in an entry and it becomes a clickable tag; click a tag to filter History to matching entries
+- Calendar view — a month grid showing which days have entries, with one click through to any day
 - Free daily reminders via a Telegram bot — the bot sends you the day's prompt, and replying to it in Telegram saves that message as the day's entry
 
 ## Setup

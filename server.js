@@ -5,6 +5,8 @@ const db = require("./db");
 const telegram = require("./telegram");
 const reminder = require("./reminder");
 const { promptForDate, randomPrompt } = require("./prompts");
+const { formatDisplayDate, monthLabel, daysInMonth, startWeekday, shiftMonth, monthKey } = require("./dates");
+const { extractTags } = require("./tags");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,10 +36,13 @@ app.get("/entry/:date", (req, res) => {
   const basePrompt = existing ? existing.prompt : promptForDate(date);
   const prompt = req.query.newPrompt ? randomPrompt(basePrompt) : basePrompt;
 
+  const content = existing ? existing.content : "";
   res.render("entry", {
     date,
+    displayDate: formatDisplayDate(date),
     prompt,
-    content: existing ? existing.content : "",
+    content,
+    tags: extractTags(content),
     isToday: date === todayStr(),
     saved: false,
   });
@@ -52,16 +57,60 @@ app.post("/entry/:date", (req, res) => {
 
   res.render("entry", {
     date,
+    displayDate: formatDisplayDate(date),
     prompt: prompt || promptForDate(date),
     content: content || "",
+    tags: extractTags(content || ""),
     isToday: date === todayStr(),
     saved: true,
   });
 });
 
 app.get("/history", (req, res) => {
-  const entries = db.listEntries();
-  res.render("history", { entries });
+  let entries = db.listEntries().map((e) => ({
+    ...e,
+    displayDate: formatDisplayDate(e.date),
+    tags: extractTags(e.content),
+  }));
+
+  const tagFilter = req.query.tag || null;
+  if (tagFilter) {
+    const wanted = tagFilter.toLowerCase();
+    entries = entries.filter((e) => e.tags.some((t) => t.toLowerCase() === wanted));
+  }
+
+  res.render("history", { entries, tagFilter });
+});
+
+app.get("/calendar", (req, res) => {
+  const today = todayStr();
+  let [year, month] = today.split("-").map(Number);
+  if (/^\d{4}-\d{2}$/.test(req.query.month || "")) {
+    [year, month] = req.query.month.split("-").map(Number);
+  }
+
+  const entryDates = new Set(db.listEntries().map((e) => e.date));
+
+  const cells = [];
+  for (let i = 0; i < startWeekday(year, month); i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth(year, month); d++) {
+    const date = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cells.push({ day: d, date, hasEntry: entryDates.has(date), isToday: date === today });
+  }
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+  const prev = shiftMonth(year, month, -1);
+  const next = shiftMonth(year, month, 1);
+
+  res.render("calendar", {
+    monthLabel: monthLabel(year, month),
+    weeks,
+    prevMonth: monthKey(prev.year, prev.month),
+    nextMonth: monthKey(next.year, next.month),
+  });
 });
 
 app.get("/settings", (req, res) => {

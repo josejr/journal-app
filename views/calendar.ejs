@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — Calendar</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <h1>📓 Daily Journal</h1>
+      <nav>
+        <a href="/">Today</a>
+        <a href="/history">History</a>
+        <a href="/calendar">Calendar</a>
+        <a href="/settings">Settings</a>
+      </nav>
+    </header>
+
+    <div class="calendar-nav">
+      <a class="nav-arrow" href="/calendar?month=<%= prevMonth %>">&larr;</a>
+      <span class="date-label"><%= monthLabel %></span>
+      <a class="nav-arrow" href="/calendar?month=<%= nextMonth %>">&rarr;</a>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="calendar-weekday">Sun</div>
+      <div class="calendar-weekday">Mon</div>
+      <div class="calendar-weekday">Tue</div>
+      <div class="calendar-weekday">Wed</div>
+      <div class="calendar-weekday">Thu</div>
+      <div class="calendar-weekday">Fri</div>
+      <div class="calendar-weekday">Sat</div>
+
+      <% weeks.forEach(function(week) { %>
+        <% week.forEach(function(cell) { %>
+          <% if (!cell) { %>
+            <div class="calendar-cell empty"></div>
+          <% } else { %>
+            <a
+              href="/entry/<%= cell.date %>"
+              class="calendar-cell<%= cell.hasEntry ? " has-entry" : "" %><%= cell.isToday ? " is-today" : "" %>"
+            ><%= cell.day %></a>
+          <% } %>
+        <% }); %>
+      <% }); %>
+    </div>
+  </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Journal — <%= date %></title>
+  <title>Journal — <%= displayDate %></title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
@@ -13,13 +13,14 @@
       <nav>
         <a href="/">Today</a>
         <a href="/history">History</a>
+        <a href="/calendar">Calendar</a>
         <a href="/settings">Settings</a>
       </nav>
     </header>
 
     <div class="date-row">
       <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() - 86400000).toISOString().slice(0,10) %>">&larr;</a>
-      <span class="date-label"><%= date %><%= isToday ? " (today)" : "" %></span>
+      <span class="date-label"><%= displayDate %><%= isToday ? " (today)" : "" %></span>
       <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() + 86400000).toISOString().slice(0,10) %>">&rarr;</a>
     </div>
 
@@ -35,9 +36,17 @@
 
     <form method="POST" action="/entry/<%= date %>">
       <input type="hidden" name="prompt" value="<%= prompt %>" />
-      <textarea name="content" rows="14" placeholder="Start writing..."><%= content %></textarea>
+      <textarea name="content" rows="14" placeholder="Start writing... use #hashtags to tag this entry"><%= content %></textarea>
       <button type="submit">Save entry</button>
     </form>
+
+    <% if (tags.length > 0) { %>
+      <div class="tag-row">
+        <% tags.forEach(function(tag) { %>
+          <a class="tag-chip" href="/history?tag=<%= encodeURIComponent(tag) %>">#<%= tag %></a>
+        <% }); %>
+      </div>
+    <% } %>
   </div>
 </body>
 </html>
