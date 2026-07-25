@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — <%= date %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <h1>📓 Daily Journal</h1>
+      <nav>
+        <a href="/">Today</a>
+        <a href="/history">History</a>
+        <a href="/settings">Settings</a>
+      </nav>
+    </header>
+
+    <div class="date-row">
+      <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() - 86400000).toISOString().slice(0,10) %>">&larr;</a>
+      <span class="date-label"><%= date %><%= isToday ? " (today)" : "" %></span>
+      <a class="nav-arrow" href="/entry/<%= new Date(new Date(date + 'T00:00:00').getTime() + 86400000).toISOString().slice(0,10) %>">&rarr;</a>
+    </div>
+
+    <div class="prompt-card">
+      <p class="prompt-label">Today's prompt</p>
+      <p class="prompt-text"><%= prompt %></p>
+      <a class="shuffle" href="/entry/<%= date %>?newPrompt=1">🔀 Give me another prompt</a>
+    </div>
+
+    <% if (saved) { %>
+      <p class="saved-banner">Saved ✓</p>
+    <% } %>
+
+    <form method="POST" action="/entry/<%= date %>">
+      <input type="hidden" name="prompt" value="<%= prompt %>" />
+      <textarea name="content" rows="14" placeholder="Start writing..."><%= content %></textarea>
+      <button type="submit">Save entry</button>
+    </form>
+  </div>
+</body>
+</html>

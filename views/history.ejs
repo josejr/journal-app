@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — History</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <h1>📓 Daily Journal</h1>
+      <nav>
+        <a href="/">Today</a>
+        <a href="/history">History</a>
+        <a href="/settings">Settings</a>
+      </nav>
+    </header>
+
+    <h2>Past entries</h2>
+
+    <% if (entries.length === 0) { %>
+      <p class="empty">No entries yet. <a href="/">Write your first one</a>.</p>
+    <% } else { %>
+      <ul class="entry-list">
+        <% entries.forEach(function(e) { %>
+          <li>
+            <a href="/entry/<%= e.date %>" class="entry-date"><%= e.date %></a>
+            <p class="entry-prompt"><%= e.prompt %></p>
+            <p class="entry-snippet"><%= e.content.length > 160 ? e.content.slice(0, 160) + "…" : e.content %></p>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+</body>
+</html>
