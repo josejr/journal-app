@@ -55,6 +55,54 @@ body {
 
 .top nav a:hover { color: var(--accent); }
 
+.top nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-user {
+  margin-left: 16px;
+  color: var(--ink);
+  font-family: -apple-system, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nav-logout {
+  display: inline;
+  margin-left: 10px;
+}
+
+.link-button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: -apple-system, sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.link-button:hover { color: var(--accent); }
+
+.page.narrow {
+  max-width: 380px;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="password"],
+.settings-form input[type="email"] {
+  font-family: -apple-system, sans-serif;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+}
+
 .date-row {
   display: flex;
   align-items: center;

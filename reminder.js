@@ -11,49 +11,37 @@ function todayStr() {
   return new Date(now - offset).toISOString().slice(0, 10);
 }
 
-function timeToCron(hhmm) {
-  const match = /^(\d{2}):(\d{2})$/.exec(hhmm);
-  if (!match) return null;
-  const [, hour, minute] = match;
-  return `${Number(minute)} ${Number(hour)} * * *`;
+function currentHHMM() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 }
 
-async function fireReminder() {
-  const settings = db.getSettings();
+async function tick() {
+  const now = currentHHMM();
   const date = todayStr();
-  const entry = db.getEntry(date);
 
-  if (entry && entry.content.trim()) {
-    console.log(`[reminder] Skipped — already journaled today (${date})`);
-    return;
-  }
+  for (const user of db.listUsersWithReminderEnabled()) {
+    if (user.reminder_time !== now) continue;
 
-  const prompt = entry ? entry.prompt : promptForDate(date);
-  try {
-    await telegram.sendReminder(settings.telegram_chat_id, prompt);
-    console.log(`[reminder] Sent to Telegram chat ${settings.telegram_chat_id}`);
-  } catch (err) {
-    console.error("[reminder] Failed to send:", err.message);
+    const entry = db.getEntry(user.user_id, date);
+    if (entry && entry.content.trim()) continue;
+
+    const prompt = entry ? entry.prompt : promptForDate(date);
+    try {
+      await telegram.sendReminder(user.telegram_chat_id, prompt);
+      console.log(`[reminder] Sent to ${user.username} (Telegram chat ${user.telegram_chat_id})`);
+    } catch (err) {
+      console.error(`[reminder] Failed to send to ${user.username}:`, err.message);
+    }
   }
 }
 
+// Runs once at boot; every user's reminder_time is checked on each minute's
+// tick, so per-user changes in Settings take effect without rescheduling.
 function reschedule() {
-  if (task) {
-    task.stop();
-    task = null;
-  }
-
-  const settings = db.getSettings();
-  if (!settings.reminder_enabled || !settings.telegram_chat_id) return;
-
-  const cronExpr = timeToCron(settings.reminder_time);
-  if (!cronExpr) {
-    console.error(`[reminder] Invalid reminder_time "${settings.reminder_time}"`);
-    return;
-  }
-
-  task = cron.schedule(cronExpr, fireReminder);
-  console.log(`[reminder] Scheduled daily at ${settings.reminder_time} to Telegram chat ${settings.telegram_chat_id}`);
+  if (task) return;
+  task = cron.schedule("* * * * *", tick);
+  console.log("[reminder] Watching for due reminders every minute");
 }
 
-module.exports = { reschedule, fireReminder };
+module.exports = { reschedule };

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — Log in</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page narrow">
+    <header class="top">
+      <h1>📓 Daily Journal</h1>
+    </header>
+
+    <% if (message) { %><p class="saved-banner"><%= message %></p><% } %>
+    <% if (error) { %><p class="error-banner"><%= error %></p><% } %>
+
+    <form method="POST" action="/login" class="settings-form">
+      <label>
+        Username
+        <input type="text" name="username" autofocus required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" required />
+      </label>
+      <button type="submit">Log in</button>
+    </form>
+    <a class="goals-manage-link" href="/forgot-password">Forgot password?</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal — Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <%- include('partials/header') %>
+
+    <h2>Users</h2>
+
+    <% if (message) { %><p class="saved-banner"><%= message %></p><% } %>
+    <% if (error) { %><p class="error-banner"><%= error %></p><% } %>
+
+    <ul class="entry-list">
+      <% users.forEach(function(u) { %>
+        <li>
+          <span class="entry-date"><%= u.username %></span>
+          <% if (u.is_admin) { %><span class="tag-chip">admin</span><% } %>
+          <% if (u.email) { %><span class="entry-snippet"><%= u.email %></span><% } %>
+        </li>
+      <% }); %>
+    </ul>
+
+    <h2>Add a user</h2>
+    <form method="POST" action="/admin/users" class="settings-form">
+      <label>
+        Username
+        <input type="text" name="username" required />
+      </label>
+      <label>
+        Email (optional, needed for them to use "Forgot password?")
+        <input type="email" name="email" />
+      </label>
+      <label>
+        Temporary password
+        <input type="password" name="password" required />
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" name="is_admin" />
+        Grant admin access
+      </label>
+      <button type="submit">Create account</button>
+    </form>
+  </div>
+</body>
+</html>

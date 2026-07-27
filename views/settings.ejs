@@ -8,16 +8,26 @@
 </head>
 <body>
   <div class="page">
-    <header class="top">
-      <h1>📓 Daily Journal</h1>
-      <nav>
-        <a href="/">Today</a>
-        <a href="/history">History</a>
-        <a href="/calendar">Calendar</a>
-        <a href="/goals">Goals</a>
-        <a href="/settings">Settings</a>
-      </nav>
-    </header>
+    <%- include('partials/header') %>
+
+    <% if (message) { %><p class="saved-banner"><%= message %></p><% } %>
+    <% if (error) { %><p class="error-banner"><%= error %></p><% } %>
+
+    <h2>Account</h2>
+
+    <% if (!user.email) { %>
+      <p class="notice">
+        No email on file yet. Add one so you can use "Forgot password?" if you're ever locked out.
+      </p>
+    <% } %>
+
+    <form method="POST" action="/settings/account" class="settings-form">
+      <label>
+        Email
+        <input type="email" name="email" value="<%= user.email || '' %>" />
+      </label>
+      <button type="submit">Save email</button>
+    </form>
 
     <h2>Telegram reminder</h2>
 
@@ -29,19 +39,28 @@
         file in the project folder, then restart the app.
       </p>
     <% } else if (!settings.telegram_chat_id) { %>
-      <p class="notice">
-        Not linked yet. Open a chat with your bot in Telegram and send it any
-        message (e.g. "hi") — it'll link automatically and confirm.
-      </p>
+      <% if (settings.telegram_link_code) { %>
+        <p class="notice">
+          Send this code to the bot in Telegram to link your account:
+          <code><%= settings.telegram_link_code %></code>
+        </p>
+      <% } else { %>
+        <p class="notice">Not linked yet.</p>
+      <% } %>
+      <form method="POST" action="/settings/telegram/link" class="test-form">
+        <button type="submit" class="secondary">
+          <%= settings.telegram_link_code ? "Generate a new code" : "Generate link code" %>
+        </button>
+      </form>
     <% } else { %>
       <p class="notice">
         Linked to Telegram chat <code><%= settings.telegram_chat_id %></code>.
         Reply to your daily prompt in Telegram to save it as that day's entry.
       </p>
+      <form method="POST" action="/settings/telegram/unlink" class="test-form">
+        <button type="submit" class="secondary">Unlink</button>
+      </form>
     <% } %>
-
-    <% if (message) { %><p class="saved-banner"><%= message %></p><% } %>
-    <% if (error) { %><p class="error-banner"><%= error %></p><% } %>
 
     <form method="POST" action="/settings" class="settings-form">
       <label class="checkbox-row">
